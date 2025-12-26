@@ -5,34 +5,21 @@
   <title>PDF Merge & Split Tool</title>
   <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      max-width: 700px;
-      margin: auto;
-      padding: 20px;
-    }
+    body { font-family: Arial, sans-serif; max-width: 700px; margin: auto; padding: 20px; }
     h2 { margin-top: 30px; }
-    button {
-      padding: 8px 14px;
-      margin-top: 10px;
-      cursor: pointer;
-    }
-    input {
-      margin-top: 10px;
-    }
+    button { padding: 8px 14px; margin-top: 10px; cursor: pointer; }
+    input { margin-top: 10px; width: 100%; }
   </style>
 </head>
 <body>
 
 <h1>PDF Merge & Split Tool</h1>
 
-<!-- ================= MERGE PDFs ================= -->
 <h2>Merge PDFs</h2>
 <input type="file" id="mergeFiles" accept="application/pdf" multiple>
 <br>
 <button onclick="mergePDFs()">Merge PDFs</button>
 
-<!-- ================= SPLIT PDF ================= -->
 <h2>Split (Demerge) PDF</h2>
 <input type="file" id="splitFile" accept="application/pdf">
 <br>
@@ -44,16 +31,11 @@
 <script>
 const { PDFDocument } = PDFLib;
 
-/* ---------- MERGE ---------- */
 async function mergePDFs() {
   const files = document.getElementById('mergeFiles').files;
-  if (files.length < 2) {
-    alert("Select at least 2 PDFs");
-    return;
-  }
+  if (files.length < 2) { alert("Select at least 2 PDFs"); return; }
 
   const mergedPdf = await PDFDocument.create();
-
   for (const file of files) {
     const bytes = await file.arrayBuffer();
     const pdf = await PDFDocument.load(bytes);
@@ -64,15 +46,10 @@ async function mergePDFs() {
   downloadPDF(await mergedPdf.save(), "merged.pdf");
 }
 
-/* ---------- SPLIT ---------- */
 async function splitPDF() {
   const file = document.getElementById('splitFile').files[0];
   const range = document.getElementById('pageRange').value;
-
-  if (!file || !range) {
-    alert("Select PDF and enter page range");
-    return;
-  }
+  if (!file || !range) { alert("Select PDF and enter page range"); return; }
 
   const bytes = await file.arrayBuffer();
   const pdf = await PDFDocument.load(bytes);
@@ -82,19 +59,16 @@ async function splitPDF() {
     ? range.split("-").map(n => parseInt(n) - 1)
     : [parseInt(range) - 1, parseInt(range) - 1];
 
-  const pages = await newPdf.copyPages(
-    pdf,
-    Array.from({ length: end - start + 1 }, (_, i) => start + i)
-  );
+  if(start < 0 || end >= pdf.getPageCount() || start > end){ alert("Invalid page range"); return; }
 
-  pages.forEach(p => newPdf.addPage(p));
+  const pages = await newPdf.copyPages(pdf, Array.from({length: end-start+1}, (_, i)=>start+i));
+  pages.forEach(p=>newPdf.addPage(p));
 
   downloadPDF(await newPdf.save(), "split.pdf");
 }
 
-/* ---------- DOWNLOAD ---------- */
-function downloadPDF(bytes, name) {
-  const blob = new Blob([bytes], { type: "application/pdf" });
+function downloadPDF(bytes, name){
+  const blob = new Blob([bytes], {type:"application/pdf"});
   const link = document.createElement("a");
   link.href = URL.createObjectURL(blob);
   link.download = name;
