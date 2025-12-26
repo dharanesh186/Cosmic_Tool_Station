@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://dharanesh186.github.io/Cosmic_Tool_Station/sitemap.xml

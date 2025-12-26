@@ -2,7 +2,15 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+
+  <!-- SEO META TAGS -->
   <title>🧽 Background Remover | Universal Remover</title>
+  <meta name="description" content="Free online background remover tool. Remove image backgrounds instantly using auto color detection or manual eraser. Download transparent PNG files easily.">
+  <meta name="keywords" content="background remover, image background removal, transparent png, online background remover, free image tools, image editor">
+  <meta name="robots" content="index, follow">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Styles -->
   <style>
     :root { --nebula-purple: #6e45e2; --star-white: #f8f9fa; }
     body { 
@@ -17,20 +25,28 @@
     canvas {
       max-width: 100%; height: auto; margin-top: 20px; border: 2px solid #444;
       cursor: crosshair;
-      /* This grid shows you what is transparent */
       background-color: #fff;
-      background-image: linear-gradient(45deg, #ccc 25%, transparent 25%), linear-gradient(-45deg, #ccc 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #ccc 75%), linear-gradient(-45deg, transparent 75%, #ccc 75%);
+      background-image: 
+        linear-gradient(45deg, #ccc 25%, transparent 25%), 
+        linear-gradient(-45deg, #ccc 25%, transparent 25%), 
+        linear-gradient(45deg, transparent 75%, #ccc 75%), 
+        linear-gradient(-45deg, transparent 75%, #ccc 75%);
       background-size: 20px 20px;
       background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
     }
     .tools { display: flex; gap: 10px; justify-content: center; margin: 20px 0; }
     button { padding: 10px 20px; cursor: pointer; background: var(--nebula-purple); color: white; border: none; border-radius: 5px; font-weight: bold; }
     .active-tool { outline: 3px solid #00f2ff; }
+    .back-btn { display:inline-block; margin-bottom:20px; color:#00f2ff; text-decoration:none; }
   </style>
 </head>
+
 <body>
 
-<h1> 🧽 Background Remover</h1>
+<a href="../index.html" class="back-btn">← Back to Mission Control</a>
+
+<h1>🧽 Background Remover</h1>
+
 <div class="section-card">
   <input type="file" id="upload" accept="image/*" style="margin-bottom:20px;">
   
@@ -39,12 +55,17 @@
     <button id="eraseBtn" onclick="setTool('erase')">🧽 Manual Eraser</button>
   </div>
 
-  <label>Sensitivity: <input type="range" id="threshold" min="0" max="150" value="50"></label>
-  
-  <br>
+  <label>Sensitivity: 
+    <input type="range" id="threshold" min="0" max="150" value="50">
+  </label>
+
+  <br><br>
   <canvas id="canvas"></canvas>
   <br>
-  <button onclick="downloadImg()" style="margin-top:20px; background:#28a745;">💾 Download PNG</button>
+
+  <button onclick="downloadImg()" style="margin-top:20px; background:#28a745;">
+    💾 Download PNG
+  </button>
 </div>
 
 <script>
@@ -104,7 +125,9 @@
     }
   }
 
-  function draw(e) { if (isDrawing && currentTool === 'erase') erase(e); }
+  function draw(e) { 
+    if (isDrawing && currentTool === 'erase') erase(e); 
+  }
 
   function erase(e) {
     const {x, y} = getMousePos(e);
@@ -112,6 +135,7 @@
     ctx.beginPath();
     ctx.arc(x, y, 20, 0, Math.PI * 2);
     ctx.fill();
+    ctx.globalCompositeOperation = 'source-over';
   }
 
   function getMousePos(e) {
@@ -124,10 +148,11 @@
 
   function downloadImg() {
     const link = document.createElement('a');
-    link.download = 'transparent_nebula.png';
+    link.download = 'transparent_background.png';
     link.href = canvas.toDataURL('image/png');
     link.click();
   }
 </script>
+
 </body>
 </html>

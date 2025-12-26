@@ -2,8 +2,27 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title> 📄 PDF Merge & Demerge | Merge & Split</title>
+
+  <!-- SEO -->
+  <title>PDF Merge & Demerge Tool | Combine & Split PDFs Online</title>
+
+  <meta name="description" content="Merge multiple PDF files or split PDF pages instantly using this free browser-based PDF Merge & Demerge tool. No uploads, fully private.">
+  <meta name="keywords" content="PDF merge, PDF split, combine PDF, split PDF, free PDF tool, online PDF merger, PDF demerge">
+  <meta name="robots" content="index, follow">
+  <meta name="author" content="Dharanesh Palaniappan">
+
+  <!-- Mobile -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="PDF Merge & Demerge Tool">
+  <meta property="og:description" content="Free online PDF merge and split tool that works directly in your browser.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://dharanesh186.github.io/Cosmic_Tool_Station/tools/pdf.html">
+
+  <!-- Library -->
   <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
+
   <style>
     :root {
       --space-dark: #0b0d17;
@@ -22,7 +41,6 @@
       min-height: 100vh;
     }
 
-    /* Background Star Animation */
     #stars-container {
       position: fixed;
       top: 0; left: 0;
@@ -37,7 +55,10 @@
       animation: twinkle 5s ease-in-out infinite alternate;
     }
 
-    @keyframes twinkle { from { opacity: 0.3; } to { opacity: 0.8; } }
+    @keyframes twinkle {
+      from { opacity: 0.3; }
+      to { opacity: 0.8; }
+    }
 
     h1 { 
       text-align: center; 
@@ -47,7 +68,6 @@
       text-shadow: 0 0 15px rgba(110, 69, 226, 0.7);
     }
 
-    /* Tool Sections (Glassmorphism) */
     .section-card {
       background: rgba(255, 255, 255, 0.05);
       padding: 30px;
@@ -58,18 +78,22 @@
       box-shadow: 0 4px 15px rgba(0,0,0,0.2);
     }
 
-    h2 { 
-      margin-top: 0; 
-      font-size: 1.4rem; 
-      color: #a287f4; 
+    h2 {
+      margin-top: 0;
+      font-size: 1.4rem;
+      color: #a287f4;
       display: flex;
       align-items: center;
       gap: 10px;
     }
 
-    label { display: block; margin-top: 15px; color: #ccc; font-size: 0.9rem; }
+    label {
+      display: block;
+      margin-top: 15px;
+      color: #ccc;
+      font-size: 0.9rem;
+    }
 
-    /* Input & Button Styling */
     input[type="file"], input[type="text"] {
       margin-top: 10px;
       width: 100%;
@@ -109,17 +133,20 @@
       text-decoration: none;
       font-size: 0.9rem;
     }
-    .back-btn:hover { color: var(--star-white); }
 
+    .back-btn:hover {
+      color: var(--star-white);
+    }
   </style>
 </head>
+
 <body>
 
 <div id="stars-container"></div>
 
 <a href="../index.html" class="back-btn">← Back to Mission Control</a>
 
-<h1> 📄PDF Merge & Demerge</h1>
+<h1>📄 PDF Merge & Demerge</h1>
 
 <div class="section-card">
   <h2>📂 Merge Cosmic Files</h2>
@@ -142,7 +169,10 @@ const { PDFDocument } = PDFLib;
 
 async function mergePDFs() {
   const files = document.getElementById('mergeFiles').files;
-  if (files.length < 2) { alert("Select at least 2 PDFs"); return; }
+  if (files.length < 2) {
+    alert("Select at least 2 PDFs");
+    return;
+  }
 
   const mergedPdf = await PDFDocument.create();
   for (const file of files) {
@@ -158,7 +188,11 @@ async function mergePDFs() {
 async function splitPDF() {
   const file = document.getElementById('splitFile').files[0];
   const range = document.getElementById('pageRange').value;
-  if (!file || !range) { alert("Select PDF and enter page range"); return; }
+
+  if (!file || !range) {
+    alert("Select PDF and enter page range");
+    return;
+  }
 
   const bytes = await file.arrayBuffer();
   const pdf = await PDFDocument.load(bytes);
@@ -168,19 +202,23 @@ async function splitPDF() {
     ? range.split("-").map(n => parseInt(n) - 1)
     : [parseInt(range) - 1, parseInt(range) - 1];
 
-  if(start < 0 || isNaN(start) || end >= pdf.getPageCount() || start > end){ 
-    alert("Invalid page range"); 
-    return; 
+  if (start < 0 || isNaN(start) || end >= pdf.getPageCount() || start > end) {
+    alert("Invalid page range");
+    return;
   }
 
-  const pages = await newPdf.copyPages(pdf, Array.from({length: end-start+1}, (_, i)=>start+i));
-  pages.forEach(p=>newPdf.addPage(p));
+  const pages = await newPdf.copyPages(
+    pdf,
+    Array.from({ length: end - start + 1 }, (_, i) => start + i)
+  );
+
+  pages.forEach(p => newPdf.addPage(p));
 
   downloadPDF(await newPdf.save(), "split_nebula.pdf");
 }
 
-function downloadPDF(bytes, name){
-  const blob = new Blob([bytes], {type:"application/pdf"});
+function downloadPDF(bytes, name) {
+  const blob = new Blob([bytes], { type: "application/pdf" });
   const link = document.createElement("a");
   link.href = URL.createObjectURL(blob);
   link.download = name;

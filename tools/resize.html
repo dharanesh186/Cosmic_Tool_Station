@@ -2,7 +2,14 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Nebula Pro | Auto-Detect Resizer</title>
+
+  <!-- SEO META TAGS -->
+  <title>Nebula Pro | Auto-Detect Image Resizer</title>
+  <meta name="description" content="Free online image resizer with automatic dimension detection. Resize JPG, PNG, and WebP images instantly with smart crop or stretch options and direct download.">
+  <meta name="keywords" content="image resizer, auto image resize, resize jpg png webp, online image resizer, free image tools, bulk image resize">
+  <meta name="robots" content="index, follow">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <style>
     :root { --nebula: #6e45e2; --cyan: #00f2ff; --glass: rgba(255, 255, 255, 0.08); }
     body { 
@@ -37,9 +44,13 @@
     }
     #fileList { margin-top: 20px; max-height: 250px; overflow-y: auto; }
     .file-row { padding: 10px; border-bottom: 1px solid #333; font-size: 0.8rem; display: flex; justify-content: space-between;}
+    .back-btn { display:inline-block; margin-bottom:20px; color:#00f2ff; text-decoration:none; }
   </style>
 </head>
+
 <body>
+
+<a href="../index.html" class="back-btn">← Back to Mission Control</a>
 
 <h1 style="text-align:center; letter-spacing: 6px; text-transform: uppercase;">↔️ Resizer</h1>
 
@@ -69,7 +80,8 @@
 
     <div class="control-group">
       <label>Quality <span id="qLabel" style="color:var(--cyan)">90%</span></label>
-      <input type="range" id="quality" min="10" max="100" value="90" oninput="document.getElementById('qLabel').innerText = this.value + '%'">
+      <input type="range" id="quality" min="10" max="100" value="90"
+        oninput="document.getElementById('qLabel').innerText = this.value + '%'">
     </div>
 
     <button class="btn-run" onclick="processAll()">🚀 Execute Direct Download</button>
@@ -79,7 +91,8 @@
     <div class="drop-zone" onclick="document.getElementById('fileInput').click()">
       <p style="font-size: 1.1rem; margin: 0;">Drop Image to Detect Dimensions</p>
       <p style="font-size: 0.75rem; opacity: 0.5; margin-top: 8px;">Supports JPG, PNG, WebP</p>
-      <input type="file" id="fileInput" multiple accept="image/*" style="display:none" onchange="autoDetect(this.files)">
+      <input type="file" id="fileInput" multiple accept="image/*" style="display:none"
+        onchange="autoDetect(this.files)">
     </div>
 
     <div id="fileList"></div>
@@ -96,8 +109,6 @@
 
     if (queue.length > 0) {
       const firstFile = queue[0];
-      
-      // Create a temporary image to read dimensions
       const img = new Image();
       img.onload = function() {
         document.getElementById('targetW').value = this.width;
@@ -154,12 +165,11 @@
       link.download = `resized_${file.name}`;
       link.href = dataUrl;
       link.click();
-      
+
       URL.revokeObjectURL(img.src);
     }
   }
 </script>
+
 </body>
 </html>
-
-
