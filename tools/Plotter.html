@@ -2,10 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-
 <title>Online Data Plotter | CSV & Excel Visualization Tool</title>
 
-<meta name="description" content="Upload CSV, Excel, or JSON files and instantly create scatter, line, or bar plots with linear and logarithmic scales.">
+<meta name="description" content="Upload CSV, Excel, or JSON files and instantly create clear plots.">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
@@ -108,14 +107,14 @@ th {
   background: white;
   padding: 20px;
   border-radius: 14px;
-  height: 500px;
+  height: 520px;
 }
 </style>
 </head>
 
 <body>
-
 <div class="container">
+
 <h2>📈 Data Plotter</h2>
 
 <div class="card">
@@ -163,6 +162,7 @@ th {
 <div id="chart-wrapper">
 <canvas id="mainChart"></canvas>
 </div>
+
 </div>
 
 <script>
@@ -200,12 +200,14 @@ function handleFile(e) {
 function parseCSV(text, delimiter) {
   const lines = text.split(/\r?\n/).filter(l => l.trim());
   const headers = lines[0].split(delimiter);
+
   rawData = lines.slice(1).map(row => {
     const values = row.split(delimiter);
     let obj = {};
-    headers.forEach((h,i) => obj[h] = parseFloat(values[i]) || values[i]);
+    headers.forEach((h,i) => obj[h] = Number(values[i]) || values[i]);
     return obj;
   });
+
   prepareUI();
 }
 
@@ -228,11 +230,13 @@ function populateTable() {
   let html = "<table><tr>";
   Object.keys(rawData[0]).forEach(k => html += `<th>${k}</th>`);
   html += "</tr>";
+
   rawData.slice(0,50).forEach(r => {
     html += "<tr>";
     Object.values(r).forEach(v => html += `<td>${v}</td>`);
     html += "</tr>";
   });
+
   html += "</table>";
   tableContainer.innerHTML = html;
 }
@@ -241,7 +245,7 @@ function plotData() {
   const xKey = xSelect.value;
   const yKey = ySelect.value;
 
-  const data = rawData
+  const points = rawData
     .map(r => ({ x: Number(r[xKey]), y: Number(r[yKey]) }))
     .filter(p => !isNaN(p.x) && !isNaN(p.y))
     .filter(p => {
@@ -252,21 +256,58 @@ function plotData() {
 
   if (chart) chart.destroy();
 
+  if (plotType.value === "bar") {
+    chart = new Chart(mainChart, {
+      type: "bar",
+      data: {
+        labels: points.map(p => p.x),
+        datasets: [{
+          label: yKey,
+          data: points.map(p => p.y),
+          backgroundColor: "rgba(110,69,226,0.6)"
+        }]
+      },
+      options: { responsive: true }
+    });
+    return;
+  }
+
   chart = new Chart(mainChart, {
     type: plotType.value,
     data: {
       datasets: [{
         label: `${yKey} vs ${xKey}`,
-        data: data,
+        data: points,
+        showLine: plotType.value !== "scatter",
+        pointRadius: 2,
+        pointHoverRadius: 5,
         borderWidth: 2,
-        showLine: plotType.value !== "scatter"
+        backgroundColor: "rgba(110,69,226,0.5)",
+        borderColor: "#6e45e2"
       }]
     },
     options: {
       responsive: true,
+      animation: false,
+      parsing: false,
+      plugins: {
+        decimation: {
+          enabled: true,
+          algorithm: "lttb",
+          samples: 500
+        }
+      },
       scales: {
-        x: { type: xScaleType.value, title: { display: true, text: xKey }},
-        y: { type: yScaleType.value, title: { display: true, text: yKey }}
+        x: {
+          type: xScaleType.value,
+          title: { display: true, text: xKey },
+          ticks: { autoSkip: true, maxTicksLimit: 10 }
+        },
+        y: {
+          type: yScaleType.value,
+          title: { display: true, text: yKey },
+          ticks: { autoSkip: true, maxTicksLimit: 8 }
+        }
       }
     }
   });
