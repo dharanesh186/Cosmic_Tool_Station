@@ -12,7 +12,6 @@
 
 <style>
 :root {
-  --bg-dark: #0b0d17;
   --accent: #6e45e2;
   --text: #f8f9fa;
   --success: #28a745;
@@ -313,10 +312,23 @@ function plotData() {
   });
 }
 
+/* ✅ FIXED EXPORT FUNCTION (WHITE BACKGROUND) */
 function downloadChart() {
+  const canvas = document.getElementById("mainChart");
+  const ctx = canvas.getContext("2d");
+
+  ctx.save();
+  ctx.globalCompositeOperation = "destination-over";
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  const image = canvas.toDataURL("image/png", 1.0);
+
+  ctx.restore();
+
   const a = document.createElement("a");
+  a.href = image;
   a.download = "plot.png";
-  a.href = mainChart.toDataURL("image/png", 1);
   a.click();
 }
 </script>
