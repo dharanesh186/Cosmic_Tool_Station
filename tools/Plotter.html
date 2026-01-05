@@ -1,219 +1,283 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+<meta charset="UTF-8">
 
-  <!-- SEO -->
-  <title>Online Data Plotter | CSV & Excel Visualization Tool</title>
+<title>Online Data Plotter | CSV & Excel Visualization Tool</title>
 
-  <meta name="description" content="Upload CSV, Excel, or JSON files and instantly create scatter, line, or bar plots with linear and logarithmic scales. Free browser-based data visualization tool.">
-  <meta name="keywords" content="data plotter, CSV plotter, Excel plotter, chart generator, scatter plot, line chart, bar chart, data visualization, online plotting tool">
-  <meta name="robots" content="index, follow">
-  <meta name="author" content="Dharanesh Palaniappan">
+<meta name="description" content="Upload CSV, Excel, or JSON files and instantly create scatter, line, or bar plots with linear and logarithmic scales.">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-  <!-- Open Graph -->
-  <meta property="og:title" content="Online Data Plotter">
-  <meta property="og:description" content="Create interactive plots from CSV and Excel files directly in your browser.">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://dharanesh186.github.io/Cosmic_Tool_Station/tools/Plotter.html">
+<style>
+:root {
+  --bg-dark: #0b0d17;
+  --accent: #6e45e2;
+  --text: #f8f9fa;
+  --success: #28a745;
+}
 
-  <!-- Libraries -->
-  <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+body {
+  margin: 0;
+  padding: 20px;
+  font-family: Segoe UI, sans-serif;
+  background: radial-gradient(circle, #1b2735, #090a0f);
+  color: var(--text);
+}
 
-  <style>
-    :root {
-      --space-dark: #0b0d17;
-      --nebula-purple: #6e45e2;
-      --star-white: #f8f9fa;
-      --success-green: #28a745;
-    }
-    
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: radial-gradient(circle at center, #1b2735 0%, #090a0f 100%);
-      color: var(--star-white);
-      margin: 0;
-      padding: 20px;
-      min-height: 100vh;
-    }
+.container {
+  max-width: 1100px;
+  margin: auto;
+}
 
-    .container {
-      max-width: 1100px;
-      margin: auto;
-    }
+h2 {
+  text-align: center;
+  letter-spacing: 2px;
+}
 
-    h2 {
-      text-align: center;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      text-shadow: 0 0 10px rgba(110, 69, 226, 0.5);
-    }
+.card {
+  background: rgba(255,255,255,0.08);
+  padding: 20px;
+  border-radius: 14px;
+  margin-bottom: 20px;
+}
 
-    .card {
-      background: rgba(255, 255, 255, 0.07);
-      padding: 25px;
-      border-radius: 16px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(12px);
-      margin-bottom: 20px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
-    }
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px,1fr));
+  gap: 20px;
+}
 
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 20px;
-    }
+label {
+  font-size: 0.85rem;
+  color: #bbb;
+}
 
-    label {
-      display: block;
-      margin-bottom: 8px;
-      font-size: 0.9rem;
-      color: #aaa;
-    }
+input, select, button {
+  width: 100%;
+  padding: 12px;
+  margin-top: 6px;
+  background: rgba(0,0,0,0.5);
+  border: 1px solid #444;
+  color: #fff;
+  border-radius: 8px;
+}
 
-    input, select, button {
-      width: 100%;
-      padding: 12px;
-      margin-top: 5px;
-      background: rgba(0, 0, 0, 0.5);
-      border: 1px solid #444;
-      color: #fff;
-      border-radius: 8px;
-      box-sizing: border-box;
-      outline: none;
-    }
+button {
+  background: var(--accent);
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+}
 
-    button {
-      background: var(--nebula-purple);
-      border: none;
-      font-weight: bold;
-      cursor: pointer;
-      transition: transform 0.2s, background 0.3s;
-      margin-top: 15px;
-    }
+button:hover {
+  background: #825ef5;
+}
 
-    button:hover {
-      background: #825ef5;
-      transform: translateY(-2px);
-    }
+.download-btn {
+  background: var(--success);
+}
 
-    .download-btn {
-      background: var(--success-green);
-    }
+.table-container {
+  max-height: 250px;
+  overflow: auto;
+  margin-top: 10px;
+}
 
-    .download-btn:hover {
-      background: #218838;
-    }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
 
-    .table-container {
-      max-height: 250px;
-      overflow: auto;
-      background: rgba(0,0,0,0.3);
-      margin-top: 15px;
-      font-size: 0.85rem;
-      border-radius: 8px;
-    }
+th, td {
+  border: 1px solid #333;
+  padding: 8px;
+}
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
+th {
+  background: #111;
+  color: var(--accent);
+  position: sticky;
+  top: 0;
+}
 
-    th, td {
-      border: 1px solid #333;
-      padding: 10px;
-    }
-
-    th {
-      background: #111;
-      position: sticky;
-      top: 0;
-      color: var(--nebula-purple);
-    }
-
-    #chart-wrapper {
-      background: white;
-      padding: 25px;
-      border-radius: 16px;
-      margin-top: 20px;
-      height: 500px;
-    }
-
-    .back-btn {
-      display: inline-block;
-      margin-bottom: 20px;
-      color: #aaa;
-      text-decoration: none;
-      font-size: 0.9rem;
-    }
-
-    .back-btn:hover {
-      color: var(--star-white);
-    }
-  </style>
+#chart-wrapper {
+  background: white;
+  padding: 20px;
+  border-radius: 14px;
+  height: 500px;
+}
+</style>
 </head>
 
 <body>
 
-<a href="../index.html" class="back-btn">← Back to Mission Control</a>
-
 <div class="container">
-  <h2>📈 Data Plotter</h2>
+<h2>📈 Data Plotter</h2>
 
-  <div class="card">
-    <label>Upload Data (CSV, XLSX, XLS, JSON)</label>
-    <input type="file" id="fileInput" accept=".csv,.xlsx,.xls,.json,.tsv">
-    <div id="tableContainer" class="table-container"></div>
-  </div>
-
-  <div class="card grid">
-    <div>
-      <label>X-Axis</label>
-      <select id="xSelect"></select>
-      <label style="margin-top:15px;">X Scale</label>
-      <select id="xScaleType">
-        <option value="linear">Linear</option>
-        <option value="logarithmic">Logarithmic</option>
-      </select>
-    </div>
-
-    <div>
-      <label>Y-Axis</label>
-      <select id="ySelect"></select>
-      <label style="margin-top:15px;">Y Scale</label>
-      <select id="yScaleType">
-        <option value="linear">Linear</option>
-        <option value="logarithmic">Logarithmic</option>
-      </select>
-    </div>
-
-    <div style="grid-column: 1 / -1;">
-      <label>Plot Type</label>
-      <select id="plotType">
-        <option value="scatter">Scatter</option>
-        <option value="line">Line</option>
-        <option value="bar">Bar</option>
-      </select>
-
-      <div style="display:flex; gap:10px;">
-        <button onclick="plotData()"> Plot</button>
-        <button class="download-btn" onclick="downloadChart()">💾 Save PNG</button>
-      </div>
-    </div>
-  </div>
-
-  <div id="chart-wrapper">
-    <canvas id="mainChart"></canvas>
-  </div>
+<div class="card">
+<label>Upload CSV / TSV / Excel / JSON</label>
+<input type="file" id="fileInput">
+<div id="tableContainer" class="table-container"></div>
 </div>
 
-<!-- JS stays unchanged -->
+<div class="card grid">
+<div>
+<label>X-Axis</label>
+<select id="xSelect"></select>
+
+<label>X Scale</label>
+<select id="xScaleType">
+<option value="linear">Linear</option>
+<option value="logarithmic">Logarithmic</option>
+</select>
+</div>
+
+<div>
+<label>Y-Axis</label>
+<select id="ySelect"></select>
+
+<label>Y Scale</label>
+<select id="yScaleType">
+<option value="linear">Linear</option>
+<option value="logarithmic">Logarithmic</option>
+</select>
+</div>
+
+<div>
+<label>Plot Type</label>
+<select id="plotType">
+<option value="scatter">Scatter</option>
+<option value="line">Line</option>
+<option value="bar">Bar</option>
+</select>
+
+<button onclick="plotData()">Plot</button>
+<button class="download-btn" onclick="downloadChart()">Save PNG</button>
+</div>
+</div>
+
+<div id="chart-wrapper">
+<canvas id="mainChart"></canvas>
+</div>
+</div>
+
 <script>
-/* your existing JS code exactly as-is */
+let rawData = [];
+let chart;
+
+document.getElementById("fileInput").addEventListener("change", handleFile);
+
+function handleFile(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  const ext = file.name.split(".").pop().toLowerCase();
+
+  reader.onload = evt => {
+    if (ext === "csv" || ext === "tsv") {
+      parseCSV(evt.target.result, ext === "tsv" ? "\t" : ",");
+    } else if (ext === "json") {
+      rawData = JSON.parse(evt.target.result);
+      prepareUI();
+    } else {
+      const wb = XLSX.read(evt.target.result, { type: "binary" });
+      const sheet = wb.Sheets[wb.SheetNames[0]];
+      rawData = XLSX.utils.sheet_to_json(sheet);
+      prepareUI();
+    }
+  };
+
+  ext === "xlsx" || ext === "xls"
+    ? reader.readAsBinaryString(file)
+    : reader.readAsText(file);
+}
+
+function parseCSV(text, delimiter) {
+  const lines = text.split(/\r?\n/).filter(l => l.trim());
+  const headers = lines[0].split(delimiter);
+  rawData = lines.slice(1).map(row => {
+    const values = row.split(delimiter);
+    let obj = {};
+    headers.forEach((h,i) => obj[h] = parseFloat(values[i]) || values[i]);
+    return obj;
+  });
+  prepareUI();
+}
+
+function prepareUI() {
+  populateTable();
+  populateSelectors();
+}
+
+function populateSelectors() {
+  const keys = Object.keys(rawData[0]);
+  xSelect.innerHTML = "";
+  ySelect.innerHTML = "";
+  keys.forEach(k => {
+    xSelect.innerHTML += `<option>${k}</option>`;
+    ySelect.innerHTML += `<option>${k}</option>`;
+  });
+}
+
+function populateTable() {
+  let html = "<table><tr>";
+  Object.keys(rawData[0]).forEach(k => html += `<th>${k}</th>`);
+  html += "</tr>";
+  rawData.slice(0,50).forEach(r => {
+    html += "<tr>";
+    Object.values(r).forEach(v => html += `<td>${v}</td>`);
+    html += "</tr>";
+  });
+  html += "</table>";
+  tableContainer.innerHTML = html;
+}
+
+function plotData() {
+  const xKey = xSelect.value;
+  const yKey = ySelect.value;
+
+  const data = rawData
+    .map(r => ({ x: Number(r[xKey]), y: Number(r[yKey]) }))
+    .filter(p => !isNaN(p.x) && !isNaN(p.y))
+    .filter(p => {
+      if (xScaleType.value === "logarithmic" && p.x <= 0) return false;
+      if (yScaleType.value === "logarithmic" && p.y <= 0) return false;
+      return true;
+    });
+
+  if (chart) chart.destroy();
+
+  chart = new Chart(mainChart, {
+    type: plotType.value,
+    data: {
+      datasets: [{
+        label: `${yKey} vs ${xKey}`,
+        data: data,
+        borderWidth: 2,
+        showLine: plotType.value !== "scatter"
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        x: { type: xScaleType.value, title: { display: true, text: xKey }},
+        y: { type: yScaleType.value, title: { display: true, text: yKey }}
+      }
+    }
+  });
+}
+
+function downloadChart() {
+  const a = document.createElement("a");
+  a.download = "plot.png";
+  a.href = mainChart.toDataURL("image/png", 1);
+  a.click();
+}
 </script>
 
 </body>
